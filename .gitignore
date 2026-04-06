@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyc
+
+# Testing & Development (exclude these)
+run_tests.py
+test_phase2.py
+verify_tasks.py
+setup_database.py
+
+# Planning files (exclude - internal use)
+.planning/
+.ruff_cache/
+
+# Git
+.git/
+
+# OS
+.DS_Store

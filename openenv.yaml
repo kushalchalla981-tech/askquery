@@ -1,0 +1,31 @@
+name: text-to-sql
+version: 1.0.0
+description: Natural language to SQL query generation with execution-based grading
+entry_point: server.app:create_env
+
+observation:
+  type: object
+  properties:
+    question:
+      type: string
+      description: The natural language question to answer with SQL
+    schema_info:
+      type: string
+      description: Database schema information for context
+    feedback:
+      type: string
+      description: Execution result or error message from previous step
+    error:
+      type: string
+      description: SQLite error message if query failed
+
+action:
+  type: object
+  properties:
+    sql_query:
+      type: string
+      description: SQL query to execute against the database
+
+reward:
+  type: float
+  description: Reward score from 0.0 to 1.0 based on query accuracy

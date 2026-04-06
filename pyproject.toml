@@ -1,0 +1,18 @@
+[project]
+name = "text-to-sql-env"
+version = "1.0.0"
+description = "Natural language to SQL query generation environment for OpenEnv"
+requires-python = ">=3.10"
+dependencies = [
+    "openenv",
+    "pydantic>=2.0",
+    "sqlglot",
+    "pandas",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.uv]
+dev-dependencies = []
