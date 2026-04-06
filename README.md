@@ -1,3 +1,12 @@
+---
+title: askquery
+emoji: 🗄️
+colorFrom: blue
+colorTo: green
+sdk: docker
+app_port: 7860
+---
+
 # Text-to-SQL OpenEnv Environment
 
 A natural language to SQL query generation environment for the OpenEnv hackathon.
