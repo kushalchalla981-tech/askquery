@@ -27,6 +27,7 @@ COPY sql_env.py .
 COPY database.py .
 COPY grader.py .
 COPY inference.py .
+COPY test_env.py .
 COPY database/ ./database/
 COPY tasks/ ./tasks/
 COPY server/ ./server/
