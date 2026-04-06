@@ -38,5 +38,5 @@ RUN pip install --no-cache-dir pydantic sqlglot pandas openai
 # Expose port for HuggingFace Spaces
 EXPOSE 7860
 
-# Set entry point to run inference by default
-CMD ["python", "inference.py"]
+# Set entry point to run test by default
+CMD ["python", "test_env.py"]
