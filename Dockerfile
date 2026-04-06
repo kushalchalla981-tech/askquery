@@ -30,12 +30,13 @@ COPY inference.py .
 COPY database/ ./database/
 COPY tasks/ ./tasks/
 COPY server/ ./server/
+COPY __init__.py .
 
-# Install Python dependencies
-RUN pip install --no-cache-dir -e .
+# Install Python dependencies directly (not editable install)
+RUN pip install --no-cache-dir pydantic sqlglot pandas
 
 # Expose port for HuggingFace Spaces
 EXPOSE 7860
 
 # Set entry point to run inference by default
-ENTRYPOINT ["python", "inference.py"]
+CMD ["python", "inference.py"]
