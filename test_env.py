@@ -4,6 +4,22 @@
 import os
 import sys
 
+# Debug: Show current directory and files
+print("Current directory:", os.getcwd())
+print("Files in current dir:", os.listdir("."))
+
+# Check database path
+db_path = os.getenv("DB_PATH", "database/sample.db")
+print("DB_PATH:", db_path)
+print("DB exists:", os.path.exists(db_path))
+
+# List all files
+print("\nAll files:")
+for root, dirs, files in os.walk("."):
+    for f in files:
+        if not f.startswith("."):
+            print(f"  {os.path.join(root, f)}")
+
 print("[START]")
 
 # Test 1: Import all modules
