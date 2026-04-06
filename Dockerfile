@@ -33,7 +33,7 @@ COPY server/ ./server/
 COPY __init__.py .
 
 # Install Python dependencies directly (not editable install)
-RUN pip install --no-cache-dir pydantic sqlglot pandas
+RUN pip install --no-cache-dir pydantic sqlglot pandas openai
 
 # Expose port for HuggingFace Spaces
 EXPOSE 7860
