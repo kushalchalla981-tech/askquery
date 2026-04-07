@@ -184,10 +184,10 @@ def run_episode(env, difficulty: str = None) -> tuple[str, float]:
     prompt = build_prompt(obs.question, obs.schema_info)
     client, model = get_client()
 
-response = call_model(client, model, prompt)
-        print(f"[DEBUG] raw_response={response}", file=sys.stderr)
-        sql = extract_sql(response)
-        print(f"[DEBUG] extracted_sql={sql}", file=sys.stderr)
+    response = call_model(client, model, prompt)
+    print(f"[DEBUG] raw_response={response}", file=sys.stderr)
+    sql = extract_sql(response)
+    print(f"[DEBUG] extracted_sql={sql}", file=sys.stderr)
 
     # Execute step
     from models import SQLAction
