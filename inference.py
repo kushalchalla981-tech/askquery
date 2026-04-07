@@ -29,17 +29,31 @@ from typing import Optional
 # Configuration
 DEFAULT_API_BASE = "https://router.huggingface.co/models"
 DEFAULT_MODEL = "meta-llama/Llama-3.2-1B-Instruct"
+USE_LOCAL_MODEL = os.getenv("USE_LOCAL_MODEL", "false").lower() == "true"
 
 
 def get_client():
-    """Create OpenAI-compatible client based on available environment variables.
+    """Create OpenAI-compatible client or local model based on environment variables.
 
     Returns:
-        OpenAI client configured for the available API
+        Either (OpenAI client, model_name) or (None, local_model_pipeline)
     """
+    global USE_LOCAL_MODEL
+
     api_key = os.getenv("OPENAI_API_KEY") or os.getenv("HF_TOKEN")
     api_base = os.getenv("API_BASE_URL")
     model_name = os.getenv("MODEL_NAME")
+
+    if not model_name:
+        model_name = DEFAULT_MODEL
+
+    if USE_LOCAL_MODEL:
+        from transformers import pipeline
+
+        pipe = pipeline(
+            "text-generation", model=model_name, torch_dtype="auto", device_map="auto"
+        )
+        return None, pipe
 
     if not api_key:
         raise ValueError(
@@ -48,9 +62,6 @@ def get_client():
 
     if not api_base:
         api_base = DEFAULT_API_BASE
-
-    if not model_name:
-        model_name = DEFAULT_MODEL
 
     from openai import OpenAI
 
@@ -93,25 +104,37 @@ def call_model(client, model: str, prompt: str) -> str:
     """Call the model to generate a SQL query.
 
     Args:
-        client: OpenAI-compatible client
-        model: Model name
+        client: OpenAI-compatible client (or None if using local model)
+        model: Model name (or pipeline for local model)
         prompt: Formatted prompt
 
     Returns:
         Generated SQL query string
     """
     try:
-        response = client.chat.completions.create(
-            model=model,
-            messages=[{"role": "user", "content": prompt}],
-            temperature=0.1,
-            max_tokens=500,
-        )
+        if client is None:
+            output = model(
+                prompt,
+                max_new_tokens=500,
+                temperature=0.1,
+                do_sample=True,
+            )
+            content = output[0]["generated_text"]
+            if prompt in content:
+                content = content[len(prompt) :]
+            return content.strip()
+        else:
+            response = client.chat.completions.create(
+                model=model,
+                messages=[{"role": "user", "content": prompt}],
+                temperature=0.1,
+                max_tokens=500,
+            )
 
-        content = response.choices[0].message.content
-        if content is None:
-            return ""
-        return content.strip()
+            content = response.choices[0].message.content
+            if content is None:
+                return ""
+            return content.strip()
 
     except Exception as e:
         print(f"Error calling model: {type(e).__name__}", file=sys.stderr)
