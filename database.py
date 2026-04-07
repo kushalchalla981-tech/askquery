@@ -156,7 +156,7 @@ def get_schema_info(db_path: str) -> str:
     for table_name, create_stmt in tables:
         schema_lines.append(f"Table: {table_name}")
 
-        cursor = conn.execute(f"PRAGMA table_info(?)", (table_name,))
+        cursor = conn.execute(f"PRAGMA table_info({table_name})")
         columns = cursor.fetchall()
 
         for col in columns:
