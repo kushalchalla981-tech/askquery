@@ -27,7 +27,7 @@ import json
 from typing import Optional
 
 # Configuration
-DEFAULT_API_BASE = "https://api-inference.huggingface.co/models"
+DEFAULT_API_BASE = "https://router.huggingface.co/models"
 DEFAULT_MODEL = "meta-llama/Llama-3.2-1B-Instruct"
 
 
@@ -64,7 +64,7 @@ def get_client():
         # Use HuggingFace Inference API
         client = OpenAI(
             api_key=api_key,
-            base_url="https://api-inference.huggingface.co/v1",
+            base_url="https://router.huggingface.co/v1",
         )
 
     return client, model_name
