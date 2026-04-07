@@ -146,6 +146,8 @@ python inference.py
 | Role | Name |
 |------|------|
 | Lead Developer | Kushal Challa |
+| Lead Designer | Lingaraj Dyavakkalavar |
+| Lead Coder | Manya S |
 | GitHub | [@kushalchalla981-tech](https://github.com/kushalchalla981-tech) |
 
 ---
