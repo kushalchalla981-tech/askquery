@@ -19,7 +19,7 @@ app_port: 7860
 
 **Transform plain English questions into SQL queries instantly**
 
-👉 [View Presentation](https://prezi.com/p/pfitcw5es4ak/askquery-democratizing-data-access/)
+👉 [View Presentation](https://prezi.com/view/p7kZWtR0K70SdCzu3kJ8/)
 
 </div>
 
@@ -153,7 +153,7 @@ python inference.py
 ## 📚 Documentation
 
 - **Live Demo**: [huggingface.co/spaces/kushal981/askquery](https://huggingface.co/spaces/kushal981/askquery)
-- **Presentation**: [View Prezi](https://prezi.com/p/pfitcw5es4ak/askquery-democratizing-data-access/)
+- **Presentation**: [View Prezi](https://prezi.com/view/p7kZWtR0K70SdCzu3kJ8/)
 - **Source Code**: [github.com/kushalchalla981-tech/askquery](https://github.com/kushalchalla981-tech/askquery)
 
 ---
