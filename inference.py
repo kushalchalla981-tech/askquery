@@ -129,18 +129,41 @@ def extract_sql(response: str) -> str:
     Returns:
         Extracted SQL query
     """
-    # Handle markdown code blocks
+    if not response:
+        return ""
+
     response = response.strip()
 
     if response.startswith("```sql"):
         response = response[6:]
+        if response.startswith("\n"):
+            response = response[1:]
+        if response.endswith("```"):
+            response = response[:-3]
     elif response.startswith("```"):
         response = response[3:]
+        if response.startswith("\n"):
+            response = response[1:]
+        if response.endswith("```"):
+            response = response[:-3]
+    elif response.startswith("sql\n"):
+        response = response[4:]
+    elif response.startswith("SQL\n"):
+        response = response[4:]
 
-    if response.endswith("```"):
-        response = response[:-3]
+    response = response.strip()
 
-    # Clean up and return
+    if not response or response == "?" or response == "?" * len(response):
+        return ""
+
+    if response.startswith("SELECT") or response.startswith("select"):
+        return response
+
+    for prefix in ["Query:", "SQL:", "The query:", "Answer:"]:
+        if response.startswith(prefix):
+            response = response[len(prefix) :].strip()
+            break
+
     return response.strip()
 
 
