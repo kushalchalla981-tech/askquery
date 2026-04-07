@@ -41,10 +41,6 @@ def get_client():
     api_base = os.getenv("API_BASE_URL")
     model_name = os.getenv("MODEL_NAME")
 
-    print(
-        f"CLIENT_CONFIG: api_key={'***' + api_key[-4:] if api_key else None}, api_base={api_base}, model={model_name}"
-    )
-
     if not api_key:
         raise ValueError(
             "Neither OPENAI_API_KEY nor HF_TOKEN environment variable is set"
@@ -58,16 +54,12 @@ def get_client():
 
     from openai import OpenAI
 
-    # Create client with custom base URL if not OpenAI
     if "openai" not in api_base.lower() and api_base != DEFAULT_API_BASE:
-        print(f"USING_CUSTOM_API: {api_base}")
         client = OpenAI(
             api_key=api_key,
             base_url=api_base,
         )
     else:
-        # Use HuggingFace Inference API
-        print(f"USING_HF_API: https://router.huggingface.co/v1")
         client = OpenAI(
             api_key=api_key,
             base_url="https://router.huggingface.co/v1",
@@ -118,18 +110,11 @@ def call_model(client, model: str, prompt: str) -> str:
 
         content = response.choices[0].message.content
         if content is None:
-            print("MODEL_RESPONSE: None")
             return ""
-        print(f"MODEL_RESPONSE: {repr(content)}")
-        result = content.strip()
-        print(f"MODEL_RESPONSE_AFTER_STRIP: {repr(result)}")
-        return result
+        return content.strip()
 
     except Exception as e:
-        print(f"MODEL_ERROR: {type(e).__name__}: {e}")
-        import traceback
-
-        traceback.print_exc()
+        print(f"Error calling model: {type(e).__name__}", file=sys.stderr)
         return ""
 
 
@@ -192,38 +177,32 @@ def run_episode(env, difficulty: str = None) -> tuple[str, float]:
     Returns:
         Tuple of (sql_query, reward)
     """
-    print("RUN_EPISODE_START")
-    try:
-        # Reset environment
-        obs = env.reset(difficulty=difficulty)
-        print(f"ENV_RESET_DONE: question={obs.question[:30]}...")
 
-        # Build prompt and call model
-        prompt = build_prompt(obs.question, obs.schema_info)
-        print(f"BUILT_PROMPT: {prompt[:50]}...")
 
-        client, model = get_client()
-        print(f"GOT_CLIENT: model={model}")
+def run_episode(env, difficulty: str = None) -> tuple[str, float]:
+    """Run a single episode in the environment.
 
-        response = call_model(client, model, prompt)
-        print(f"GOT_RESPONSE: {repr(response)}")
+    Args:
+        env: SQLQueryEnv instance
+        difficulty: Optional difficulty level
 
-        sql = extract_sql(response)
-        print(f"EXTRACTED_SQL: {repr(sql)}")
+    Returns:
+        Tuple of (sql_query, reward)
+    """
+    obs = env.reset(difficulty=difficulty)
 
-        # Execute step
-        from models import SQLAction
+    prompt = build_prompt(obs.question, obs.schema_info)
+    client, model = get_client()
 
-        action = SQLAction(sql_query=sql)
-        result = env.step(action)
+    response = call_model(client, model, prompt)
+    sql = extract_sql(response)
 
-        return sql, result.reward or 0.0
-    except Exception as e:
-        print(f"EPISODE_ERROR: {type(e).__name__}: {e}")
-        import traceback
+    from models import SQLAction
 
-        traceback.print_exc()
-        raise
+    action = SQLAction(sql_query=sql)
+    result = env.step(action)
+
+    return sql, result.reward or 0.0
 
 
 def run_inference(
@@ -256,9 +235,7 @@ def run_inference(
         difficulty = difficulties[i % len(difficulties)]
 
         try:
-            print(f"TRY_EPISODE_{i + 1}")
             sql, reward = run_episode(env, difficulty=difficulty)
-            print(f"GOT_RESULT_{i + 1}: sql={repr(sql)}")
 
             print(f"[STEP] step={i + 1} action={sql[:100]}... reward={reward:.2f}")
 
