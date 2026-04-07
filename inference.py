@@ -193,24 +193,37 @@ def run_episode(env, difficulty: str = None) -> tuple[str, float]:
         Tuple of (sql_query, reward)
     """
     print("RUN_EPISODE_START")
-    # Reset environment
-    obs = env.reset(difficulty=difficulty)
-    print(f"ENV_RESET_DONE: question={obs.question[:30]}...")
+    try:
+        # Reset environment
+        obs = env.reset(difficulty=difficulty)
+        print(f"ENV_RESET_DONE: question={obs.question[:30]}...")
 
-    # Build prompt and call model
-    prompt = build_prompt(obs.question, obs.schema_info)
-    client, model = get_client()
+        # Build prompt and call model
+        prompt = build_prompt(obs.question, obs.schema_info)
+        print(f"BUILT_PROMPT: {prompt[:50]}...")
 
-    response = call_model(client, model, prompt)
-    sql = extract_sql(response)
+        client, model = get_client()
+        print(f"GOT_CLIENT: model={model}")
 
-    # Execute step
-    from models import SQLAction
+        response = call_model(client, model, prompt)
+        print(f"GOT_RESPONSE: {repr(response)}")
 
-    action = SQLAction(sql_query=sql)
-    result = env.step(action)
+        sql = extract_sql(response)
+        print(f"EXTRACTED_SQL: {repr(sql)}")
 
-    return sql, result.reward or 0.0
+        # Execute step
+        from models import SQLAction
+
+        action = SQLAction(sql_query=sql)
+        result = env.step(action)
+
+        return sql, result.reward or 0.0
+    except Exception as e:
+        print(f"EPISODE_ERROR: {type(e).__name__}: {e}")
+        import traceback
+
+        traceback.print_exc()
+        raise
 
 
 def run_inference(
