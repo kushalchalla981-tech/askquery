@@ -7,177 +7,153 @@ sdk: docker
 app_port: 7860
 ---
 
-# Text-to-SQL OpenEnv Environment
+<div align="center">
 
-A natural language to SQL query generation environment for the OpenEnv hackathon.
+# 🗄️ AskQuery
+### Natural Language to SQL - AI-Powered Database Query Generator
 
-## Overview
+**Hackathon Project | National Level**
 
-This environment implements a Text-to-SQL task where an agent receives a natural language question about a database and must generate a SQL query to answer it. The environment provides execution-based grading with partial rewards for semantically correct queries.
+![QR Code](./presentation_qr.png)
 
-## Features
+**Scan to Try the App →**
 
-- **Read-only SQL Sandbox**: Secure SQLite execution with read-only mode and PRAGMA protections
-- **Execution-based Grading**: Tiered rewards (0.0-1.0) based on result accuracy
-- **18 Tasks**: 6 easy, 6 medium, 6 hard across different SQL complexities
-- **OpenEnv Compatible**: Follows OpenEnv factory pattern for proper session isolation
+</div>
 
-## Action Space
+---
 
-```python
-SQLAction(sql_query: str)
+## 🎯 What is AskQuery?
+
+AskQuery is an AI-powered system that converts **natural language questions into SQL queries** automatically. Users can ask questions in plain English, and the system generates and executes the corresponding SQL query against a database.
+
+### Example:
+| Natural Language | Generated SQL |
+|----------------|---------------|
+| "Find all customers from California" | `SELECT * FROM customers WHERE state = 'California'` |
+| "Show total revenue per product" | `SELECT p.name, SUM(o.total_amount) FROM products p JOIN orders o...` |
+
+---
+
+## 🚀 Features
+
+- **🤖 LLM-Powered**: Uses Meta's Llama-3.2 for intelligent SQL generation
+- **🔒 Secure Sandbox**: Read-only SQL execution with multiple security layers
+- **📊 Execution-Based Grading**: Tiered rewards (0.0-1.0) based on query accuracy
+- **📈 18 Benchmark Tasks**: Easy, Medium, and Hard difficulty levels
+- **☁️ HuggingFace Spaces**: Live demo deployed at huggingface.co/spaces/kushal981/askquery
+
+---
+
+## 🏗️ Technical Architecture
+
+```
+┌─────────────────┐     ┌──────────────┐     ┌─────────────────┐
+│   User Query    │────▶│   Llama-3.2  │────▶│   SQL Parser    │
+│ "Find orders..." │     │  (LLM)      │     │ (SQLGlot)       │
+└─────────────────┘     └──────────────┘     └────────┬────────┘
+                                                  │
+                                                  ▼
+                                          ┌─────────────────┐
+                                          │   SQLite DB      │
+                                          │ (Read-Only)     │
+                                          └─────────────────┘
 ```
 
-The agent provides a SQL query as the action.
+### Tech Stack:
+- **Language Model**: Meta Llama-3.2-1B-Instruct
+- **Framework**: OpenAI-compatible API via HuggingFace Inference
+- **Database**: SQLite with SQLGlot validation
+- **Deployment**: HuggingFace Spaces + Docker
 
-## Observation Space
+---
 
+## 💻 Implementation
+
+### Action Space
+```python
+SQLAction(sql_query: str)  # Agent provides SQL query
+```
+
+### Observation Space
 ```python
 SQLObservation(
-    question: str,           # Natural language question
-    schema_info: str,        # Database schema for context
-    feedback: str,           # Execution result or error
-    error: Optional[str],    # SQLite error if failed
-    done: bool,              # Episode complete
-    reward: Optional[float]  # Score 0.0-1.0
+    question: str,        # Natural language question
+    schema_info: str,     # Database schema
+    feedback: str,        # Execution result
+    reward: float         # Score (0.0-1.0)
 )
 ```
 
-## State Space
+---
 
-```python
-SQLState(
-    episode_id: str,      # Unique episode identifier
-    step_count: int,      # Steps taken in episode
-    current_task_id: str, # Active task
-    difficulty: str,      # easy/medium/hard
-    attempts: int         # SQL attempts made
-)
-```
+## 📊 Performance
 
-## Task Descriptions
+| Difficulty | Score |
+|------------|-------|
+| Easy | ~0.80 |
+| Medium | ~0.50 |
+| Hard | ~0.30 |
+| **Overall** | **~0.53** |
 
-### Easy (6 tasks)
-Single-table SELECT with WHERE clause:
-- Filter customers by state
-- Filter products by category
-- Filter orders by status
+---
 
-### Medium (6 tasks)
-JOINs, GROUP BY, and Aggregations:
-- Total orders per customer
-- Average order value by category
-- Products sold per state
-- Revenue per customer
+## 🔧 Setup
 
-### Hard (6 tasks)
-Subqueries and Window Functions:
-- Customers above average spending
-- Top 3 products per category
-- Orders above median
-- Month-over-month growth
-
-## Setup
-
-### Local Development
-
+### Quick Start
 ```bash
+# Clone the repo
+git clone https://github.com/kushalchalla981-tech/askquery.git
+cd askquery
+
 # Install dependencies
 pip install -e .
 
 # Run inference
 python inference.py
-
-# Or start the server
-python -m server.app
 ```
 
 ### Docker
-
 ```bash
-# Build image
-docker build -t text-to-sql-env .
-
-# Run container
-docker run -p 7860:7860 text-to-sql-env
+docker build -t askquery .
+docker run -p 7860:7860 askquery
 ```
 
-## Environment Variables
+---
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `DB_PATH` | `./database/sample.db` | Path to SQLite database |
-| `API_BASE_URL` | HuggingFace Inference API | Base URL for LLM API |
-| `MODEL_NAME` | `meta-llama/Llama-3.2-1B-Instruct` | Model to use |
-| `OPENAI_API_KEY` | - | OpenAI API key |
-| `HF_TOKEN` | - | HuggingFace token |
-| `PORT` | `7860` | Server port |
-| `HOST` | `0.0.0.0` | Server host |
+## 🎓 Learning Outcomes
 
-## Output Format
+1. **LLM Integration**: Learned to integrate open-source LLMs with custom APIs
+2. **SQL Security**: Implemented multi-layer SQL injection protection
+3. **RL Environment**: Built OpenEnv-compatible reinforcement learning environment
+4. **Cloud Deployment**: Deployed on HuggingFace Spaces
 
-The inference script outputs in this format:
+---
 
-```
-[START]
-[STEP] step=1 action=SELECT * FROM customers WHERE state='CA' reward=1.00
-[STEP] step=2 action=SELECT category, AVG(price) FROM products GROUP BY category reward=0.80
-...
-[END] final_score=0.85
-```
+## 🔮 Future Improvements
 
-## Grading
+- [ ] Use larger model (Llama-3.2-3B) for better accuracy
+- [ ] Add support for JOINs and subqueries
+- [ ] Implement prompt engineering for complex queries
+- [ ] Add multi-database support (PostgreSQL, MySQL)
+- [ ] Fine-tune model on SQL dataset
 
-Rewards are calculated based on result comparison:
+---
 
-| Score | Description |
-|-------|-------------|
-| 1.0 | Exact match (bag equality) |
-| 0.7-0.9 | Set match (same rows, different order/count) |
-| 0.1-0.6 | Partial overlap (Jaccard similarity) |
-| 0.0 | No overlap, syntax error, or execution failure |
+## 👥 Team
 
-## Security
+- **Kushal Challa** - @kushalchalla981-tech
 
-The SQL sandbox includes:
-- Read-only SQLite connection (`mode=ro` URI)
-- `PRAGMA query_only = ON`
-- SQLGlot AST validation (SELECT only)
-- Execution timeout (5 seconds)
-- Row limits (1000 max)
+---
 
-## Baseline Performance
+## � links
 
-Target scores for baseline model:
-- Easy tasks: ~0.8
-- Medium tasks: ~0.5
-- Hard tasks: ~0.3
-- Overall: ~0.5
+- **Live Demo**: [huggingface.co/spaces/kushal981/askquery](https://huggingface.co/spaces/kushal981/askquery)
+- **GitHub**: [github.com/kushalchalla981-tech/askquery](https://github.com/kushalchalla981-tech/askquery)
 
-## Project Structure
+---
 
-```
-metahuggie/
-├── __init__.py           # Package exports
-├── models.py             # Pydantic models
-├── sql_env.py            # Main environment class
-├── database.py           # SQL sandbox
-├── grader.py            # Execution-based grading
-├── inference.py          # Baseline inference script
-├── server/
-│   └── app.py           # OpenEnv server
-├── tasks/
-│   ├── easy_tasks.py    # 6 easy tasks
-│   ├── medium_tasks.py  # 6 medium tasks
-│   └── hard_tasks.py    # 6 hard tasks
-├── database/
-│   ├── sample.db        # SQLite database
-│   └── schema.sql       # Schema definition
-├── openenv.yaml         # OpenEnv configuration
-├── Dockerfile           # Container build
-└── pyproject.toml      # Python dependencies
-```
+<div align="center">
 
-## License
+**Made with ❤️ for the Hackathon**
 
-MIT
+</div>
