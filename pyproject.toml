@@ -12,6 +12,9 @@ dependencies = [
     "torch>=2.0.0",
 ]
 
+[project.scripts]
+askquery = "server.app:main"
+
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
