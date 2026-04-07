@@ -41,6 +41,10 @@ def get_client():
     api_base = os.getenv("API_BASE_URL")
     model_name = os.getenv("MODEL_NAME")
 
+    print(
+        f"CLIENT_CONFIG: api_key={'***' + api_key[-4:] if api_key else None}, api_base={api_base}, model={model_name}"
+    )
+
     if not api_key:
         raise ValueError(
             "Neither OPENAI_API_KEY nor HF_TOKEN environment variable is set"
@@ -56,12 +60,14 @@ def get_client():
 
     # Create client with custom base URL if not OpenAI
     if "openai" not in api_base.lower() and api_base != DEFAULT_API_BASE:
+        print(f"USING_CUSTOM_API: {api_base}")
         client = OpenAI(
             api_key=api_key,
             base_url=api_base,
         )
     else:
         # Use HuggingFace Inference API
+        print(f"USING_HF_API: https://router.huggingface.co/v1")
         client = OpenAI(
             api_key=api_key,
             base_url="https://router.huggingface.co/v1",
