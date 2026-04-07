@@ -114,7 +114,7 @@ def call_model(client, model: str, prompt: str) -> str:
         return content.strip()
 
     except Exception as e:
-        print(f"Error calling model: {e}", file=sys.stderr)
+        print(f"Error calling model: {type(e).__name__}", file=sys.stderr)
         return ""
 
 

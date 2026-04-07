@@ -150,20 +150,16 @@ def get_schema_info(db_path: str) -> str:
         "SELECT name, sql FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'"
     )
     tables = cursor.fetchall()
-    conn.close()
+    cursor.close()
 
     schema_lines = []
     for table_name, create_stmt in tables:
         schema_lines.append(f"Table: {table_name}")
 
-        # Get columns
-        conn = get_readonly_connection(db_path)
-        cursor = conn.execute(f"PRAGMA table_info({table_name})")
+        cursor = conn.execute(f"PRAGMA table_info(?)", (table_name,))
         columns = cursor.fetchall()
-        conn.close()
 
         for col in columns:
-            # col: (cid, name, type, notnull, dflt_value, pk)
             col_name = col[1]
             col_type = col[2]
             pk = "PRIMARY KEY" if col[5] else ""
@@ -171,6 +167,7 @@ def get_schema_info(db_path: str) -> str:
 
         schema_lines.append("")
 
+    conn.close()
     return "\n".join(schema_lines)
 
 
@@ -188,13 +185,12 @@ def get_table_row_counts(db_path: str) -> dict:
         "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'"
     )
     tables = [row[0] for row in cursor.fetchall()]
-    conn.close()
+    cursor.close()
 
     row_counts = {}
     for table in tables:
-        conn = get_readonly_connection(db_path)
-        cursor = conn.execute(f"SELECT COUNT(*) FROM {table}")
+        cursor = conn.execute(f'SELECT COUNT(*) FROM "{table}"')
         row_counts[table] = cursor.fetchone()[0]
-        conn.close()
 
+    conn.close()
     return row_counts
