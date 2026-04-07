@@ -34,10 +34,10 @@ COPY server/ ./server/
 COPY __init__.py .
 
 # Install Python dependencies directly (not editable install)
-RUN pip install --no-cache-dir pydantic sqlglot pandas openai
+RUN pip install --no-cache-dir pydantic sqlglot pandas openai openenv
 
 # Expose port for HuggingFace Spaces
 EXPOSE 7860
 
-# Set entry point to run inference for submission
-CMD ["python", "inference.py"]
+# Set entry point to run the server for OpenEnv submission
+CMD ["python", "-m", "server.app"]
