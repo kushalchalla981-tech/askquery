@@ -10,14 +10,17 @@ dependencies = [
     "pandas",
     "transformers>=4.30.0",
     "torch>=2.0.0",
+    "uvicorn",
+    "fastapi",
+    "openai",
 ]
 
 [project.scripts]
-askquery = 'server.app:main'
+server = "server.app:main"
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
-[tool.uv]
-dev-dependencies = []
+[tool.hatch.build.targets.wheel]
+packages = ["."]

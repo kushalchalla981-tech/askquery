@@ -1,7 +1,7 @@
 name: text-to-sql
 version: 1.0.0
 description: Natural language to SQL query generation with execution-based grading
-entry_point: server.app:create_env
+entry_point: sql_env:create_env
 
 observation:
   type: object
