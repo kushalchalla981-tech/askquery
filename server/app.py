@@ -94,7 +94,7 @@ def main():
     app = create_app()
 
     host = os.getenv("HOST", "0.0.0.0")
-    port = int(os.getenv("PORT", "8000"))
+    port = int(os.getenv("PORT", "7860"))
 
     print(f"Starting Text-to-SQL environment on {host}:{port}")
     uvicorn.run(app, host=host, port=port)

@@ -34,7 +34,7 @@ COPY server/ ./server/
 COPY __init__.py .
 
 # Install Python dependencies directly (not editable install)
-RUN pip install --no-cache-dir pydantic sqlglot pandas openai openenv
+RUN pip install --no-cache-dir pydantic sqlglot pandas openai openenv uvicorn fastapi
 
 # Expose port for HuggingFace Spaces
 EXPOSE 7860
