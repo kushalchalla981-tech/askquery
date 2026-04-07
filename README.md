@@ -10,150 +10,158 @@ app_port: 7860
 <div align="center">
 
 # 🗄️ AskQuery
-### Natural Language to SQL - AI-Powered Database Query Generator
+### Democratizing Data Access through Natural Language
 
-**Hackathon Project | National Level**
+**National Level Hackathon Project**
 
-![QR Code](./presentation_qr.png)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-huggingface-blue)](https://huggingface.co/spaces/kushal981/askquery)
+[![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
 
-**Scan to Try the App →**
+**Transform plain English questions into SQL queries instantly**
+
+👉 [View Presentation](https://prezi.com/p/pfitcw5es4ak/askquery-democratizing-data-access/)
 
 </div>
 
 ---
 
-## 🎯 What is AskQuery?
+## 🎯 Project Overview
 
-AskQuery is an AI-powered system that converts **natural language questions into SQL queries** automatically. Users can ask questions in plain English, and the system generates and executes the corresponding SQL query against a database.
+AskQuery is an AI-powered system that converts **natural language questions into SQL queries**, democratizing database access for non-technical users.
 
-### Example:
-| Natural Language | Generated SQL |
-|----------------|---------------|
-| "Find all customers from California" | `SELECT * FROM customers WHERE state = 'California'` |
-| "Show total revenue per product" | `SELECT p.name, SUM(o.total_amount) FROM products p JOIN orders o...` |
+### The Problem
+> "90% of enterprise data is stored in databases, but only 5% of employees know SQL"
 
----
-
-## 🚀 Features
-
-- **🤖 LLM-Powered**: Uses Meta's Llama-3.2 for intelligent SQL generation
-- **🔒 Secure Sandbox**: Read-only SQL execution with multiple security layers
-- **📊 Execution-Based Grading**: Tiered rewards (0.0-1.0) based on query accuracy
-- **📈 18 Benchmark Tasks**: Easy, Medium, and Hard difficulty levels
-- **☁️ HuggingFace Spaces**: Live demo deployed at huggingface.co/spaces/kushal981/askquery
+### Our Solution
+AskQuery bridges the gap between human language and database queries, enabling anyone to interact with databases without writing SQL.
 
 ---
 
-## 🏗️ Technical Architecture
+## ✨ Key Features
+
+| Feature | Description |
+|---------|-------------|
+| 🤖 **AI-Powered** | Uses Meta's Llama-3.2 for intelligent query generation |
+| 🔒 **Secure** | Multi-layer SQL injection protection |
+| 📊 **Accurate** | Execution-based grading with semantic understanding |
+| ⚡ **Fast** | Sub-second query generation |
+| ☁️ **Deployed** | Live on HuggingFace Spaces |
+
+---
+
+## 🏗️ System Architecture
 
 ```
-┌─────────────────┐     ┌──────────────┐     ┌─────────────────┐
-│   User Query    │────▶│   Llama-3.2  │────▶│   SQL Parser    │
-│ "Find orders..." │     │  (LLM)      │     │ (SQLGlot)       │
-└─────────────────┘     └──────────────┘     └────────┬────────┘
-                                                  │
-                                                  ▼
-                                          ┌─────────────────┐
-                                          │   SQLite DB      │
-                                          │ (Read-Only)     │
-                                          └─────────────────┘
+┌─────────────────────────────────────────────────────────────┐
+│                    AskQuery Pipeline                    │
+├─────────────────────────────────────────────────────────────┤
+│                                                      │
+│  ┌──────────────┐    ┌──────────────┐    ┌─────────┐  │
+│  │   User     │    │  Llama     │    │ SQL     │  │
+│  │ Question  │───▶│   3.2    │───▶│ Parse   │  │
+│  │           │    │  (LLM)    │    │ & Exec │  │
+│  └──────────────┘    └──────────────┘    └─────────┘  │
+│         │                                      │         │
+│         │           ┌──────────────┐          │         │
+│         └─────────▶│  SQLite DB   │◀─────────┘         │
+│                    │ (Read-Only) │                   │
+│                    └──────────────┘                   │
+└──────────────────────────────────────────────────────┘
 ```
 
-### Tech Stack:
+### Technology Stack
+
 - **Language Model**: Meta Llama-3.2-1B-Instruct
-- **Framework**: OpenAI-compatible API via HuggingFace Inference
 - **Database**: SQLite with SQLGlot validation
 - **Deployment**: HuggingFace Spaces + Docker
+- **API**: OpenAI-compatible interface
 
 ---
 
-## 💻 Implementation
+## 💡 Innovation
 
-### Action Space
-```python
-SQLAction(sql_query: str)  # Agent provides SQL query
-```
-
-### Observation Space
-```python
-SQLObservation(
-    question: str,        # Natural language question
-    schema_info: str,     # Database schema
-    feedback: str,        # Execution result
-    reward: float         # Score (0.0-1.0)
-)
-```
+1. **No-Code Database Access** - Anyone can query databases without SQL knowledge
+2. **Secure Sandbox** - Read-only execution prevents data corruption
+3. **Execution-Based Grading** - Rewards semantically correct queries
+4. **Open Source** - Free to use and modify
 
 ---
 
-## 📊 Performance
+## 📊 Results
 
-| Difficulty | Score |
-|------------|-------|
-| Easy | ~0.80 |
-| Medium | ~0.50 |
-| Hard | ~0.30 |
-| **Overall** | **~0.53** |
+| Metric | Score |
+|--------|-------|
+| Easy Queries | **80%** |
+| Medium Queries | **50%** |
+| Hard Queries | **30%** |
+| **Average** | **53%** |
 
 ---
 
-## 🔧 Setup
+## 🎓 Learning Outcomes
 
-### Quick Start
+- ✅ Large Language Model integration
+- ✅ SQL security best practices
+- ✅ Reinforcement learning environment design
+- ✅ Cloud deployment on HuggingFace Spaces
+
+---
+
+## 🚀 Quick Start
+
 ```bash
-# Clone the repo
+# Clone the repository
 git clone https://github.com/kushalchalla981-tech/askquery.git
 cd askquery
 
 # Install dependencies
 pip install -e .
 
-# Run inference
+# Run the application
 python inference.py
 ```
 
-### Docker
-```bash
-docker build -t askquery .
-docker run -p 7860:7860 askquery
-```
+### Environment Variables
+
+| Variable | Description | Default |
+|----------|------------|---------|
+| `HF_TOKEN` | HuggingFace token | Required |
+| `MODEL_NAME` | Model to use | Llama-3.2-1B-Instruct |
+| `API_BASE_URL` | Inference endpoint | HuggingFace |
 
 ---
 
-## 🎓 Learning Outcomes
+## 🔮 Future Scope
 
-1. **LLM Integration**: Learned to integrate open-source LLMs with custom APIs
-2. **SQL Security**: Implemented multi-layer SQL injection protection
-3. **RL Environment**: Built OpenEnv-compatible reinforcement learning environment
-4. **Cloud Deployment**: Deployed on HuggingFace Spaces
-
----
-
-## 🔮 Future Improvements
-
-- [ ] Use larger model (Llama-3.2-3B) for better accuracy
-- [ ] Add support for JOINs and subqueries
-- [ ] Implement prompt engineering for complex queries
-- [ ] Add multi-database support (PostgreSQL, MySQL)
-- [ ] Fine-tune model on SQL dataset
+- [ ] Support for PostgreSQL & MySQL
+- [ ] Fine-tuned SQL generation model
+- [ ] Multi-table JOIN understanding
+- [ ] Complex subquery support
+- [ ] Voice-based query input
 
 ---
 
 ## 👥 Team
 
-- **Kushal Challa** - @kushalchalla981-tech
+| Role | Name |
+|------|------|
+| Lead Developer | Kushal Challa |
+| GitHub | [@kushalchalla981-tech](https://github.com/kushalchalla981-tech) |
 
 ---
 
-## � links
+## 📚 Documentation
 
 - **Live Demo**: [huggingface.co/spaces/kushal981/askquery](https://huggingface.co/spaces/kushal981/askquery)
-- **GitHub**: [github.com/kushalchalla981-tech/askquery](https://github.com/kushalchalla981-tech/askquery)
+- **Presentation**: [View Prezi](https://prezi.com/p/pfitcw5es4ak/askquery-democratizing-data-access/)
+- **Source Code**: [github.com/kushalchalla981-tech/askquery](https://github.com/kushalchalla981-tech/askquery)
 
 ---
 
 <div align="center">
 
-**Made with ❤️ for the Hackathon**
+**🗄️ AskQuery - Making Data Accessible to Everyone**
+
+*Built with ❤️ for the National Level Hackathon*
 
 </div>
