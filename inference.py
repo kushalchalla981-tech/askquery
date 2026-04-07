@@ -192,8 +192,10 @@ def run_episode(env, difficulty: str = None) -> tuple[str, float]:
     Returns:
         Tuple of (sql_query, reward)
     """
+    print("RUN_EPISODE_START")
     # Reset environment
     obs = env.reset(difficulty=difficulty)
+    print(f"ENV_RESET_DONE: question={obs.question[:30]}...")
 
     # Build prompt and call model
     prompt = build_prompt(obs.question, obs.schema_info)
@@ -241,7 +243,9 @@ def run_inference(
         difficulty = difficulties[i % len(difficulties)]
 
         try:
+            print(f"TRY_EPISODE_{i + 1}")
             sql, reward = run_episode(env, difficulty=difficulty)
+            print(f"GOT_RESULT_{i + 1}: sql={repr(sql)}")
 
             print(f"[STEP] step={i + 1} action={sql[:100]}... reward={reward:.2f}")
 
