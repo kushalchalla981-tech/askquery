@@ -185,9 +185,9 @@ def run_episode(env, difficulty: str = None) -> tuple[str, float]:
     client, model = get_client()
 
     response = call_model(client, model, prompt)
-    print(f"[DEBUG] raw_response={response}", file=sys.stderr)
+    print(f"[DEBUG] raw_response={response}")
     sql = extract_sql(response)
-    print(f"[DEBUG] extracted_sql={sql}", file=sys.stderr)
+    print(f"[DEBUG] extracted_sql={sql}")
 
     # Execute step
     from models import SQLAction
