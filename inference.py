@@ -111,10 +111,19 @@ def call_model(client, model: str, prompt: str) -> str:
         )
 
         content = response.choices[0].message.content
-        return content.strip()
+        if content is None:
+            print("MODEL_RESPONSE: None")
+            return ""
+        print(f"MODEL_RESPONSE: {repr(content)}")
+        result = content.strip()
+        print(f"MODEL_RESPONSE_AFTER_STRIP: {repr(result)}")
+        return result
 
     except Exception as e:
-        print(f"Error calling model: {type(e).__name__}", file=sys.stderr)
+        print(f"MODEL_ERROR: {type(e).__name__}: {e}")
+        import traceback
+
+        traceback.print_exc()
         return ""
 
 
@@ -185,9 +194,7 @@ def run_episode(env, difficulty: str = None) -> tuple[str, float]:
     client, model = get_client()
 
     response = call_model(client, model, prompt)
-    print(f"[DEBUG] raw_response={response}")
     sql = extract_sql(response)
-    print(f"[DEBUG] extracted_sql={sql}")
 
     # Execute step
     from models import SQLAction
