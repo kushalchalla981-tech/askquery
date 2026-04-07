@@ -13,7 +13,7 @@ dependencies = [
 ]
 
 [project.scripts]
-askquery = "server.app:main"
+askquery = 'server.app:main'
 
 [build-system]
 requires = ["hatchling"]
