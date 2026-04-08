@@ -68,5 +68,5 @@ except Exception as e:
     print("[END] error=database_failed")
     sys.exit(1)
 
-print("[END] final_score=1.0")
+print("[END] final_score=0.99")
 print("All tests passed!")
