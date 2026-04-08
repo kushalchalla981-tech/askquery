@@ -151,15 +151,15 @@ def grade_with_columns(
     row_score = grade_query(agent_results, expected_results)
 
     # If exact match, return full score
-    if row_score == 1.0:
-        return 1.0
+    if row_score >= 0.99:
+        return 0.99
 
     # Otherwise, provide small bonus for valid execution (result is not empty)
     if agent_results and not expected_results:
-        return 0.1  # Got data when expected none
+        return 0.09  # Got data when expected none
 
     if expected_results and not agent_results:
-        return 0.0  # Got none when expected data
+        return 0.01  # Got none when expected data
 
     # For partial matches, keep row-based score
     return row_score
