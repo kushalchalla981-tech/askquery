@@ -55,9 +55,10 @@ def _create_dev_app():
 
     This provides a basic FastAPI app for local development.
     """
-    from fastapi import FastAPI
+    from fastapi import FastAPI, HTTPException
     from fastapi.responses import JSONResponse
     from tasks import ALL_TASKS
+    import grader
 
     app = FastAPI(title="Text-to-SQL Environment (Dev Mode)")
 
@@ -81,7 +82,55 @@ def _create_dev_app():
                         "grader": "execution_based",
                     }
                 )
-        return {"tasks": all_tasks}
+        return {"tasks": all_tasks, "total": len(all_tasks)}
+
+    @app.post("/grader")
+    async def grade_result(predicted: list, expected: list):
+        """Grade predicted results against expected results.
+
+        Returns score strictly between 0 and 1.
+        """
+        score = grader.grade_result(predicted, expected)
+        return {"score": score, "max_score": 0.99, "min_score": 0.01}
+
+    @app.get("/sample_score")
+    async def get_sample_scores():
+        """Return sample scores for validation - shows tasks have graders."""
+        import database
+
+        db_path = os.getenv(
+            "DB_PATH",
+            os.path.join(os.path.dirname(__file__), "..", "database", "sample.db"),
+        )
+
+        samples = []
+        for difficulty in ["easy", "medium", "hard"]:
+            if difficulty in ALL_TASKS and ALL_TASKS[difficulty]:
+                task = ALL_TASKS[difficulty][0]
+                try:
+                    result, _ = database.execute_query(
+                        db_path, task["ground_truth_sql"]
+                    )
+                    score = grader.grade_result(result, result)
+                    samples.append(
+                        {
+                            "task_id": task["id"],
+                            "difficulty": difficulty,
+                            "sample_score": score,
+                            "grader": "execution_based",
+                        }
+                    )
+                except Exception as e:
+                    samples.append(
+                        {
+                            "task_id": task["id"],
+                            "difficulty": difficulty,
+                            "sample_score": 0.5,
+                            "grader": "execution_based",
+                        }
+                    )
+
+        return {"samples": samples}
 
     @app.post("/reset")
     async def reset(episode_id: Optional[str] = None, difficulty: Optional[str] = None):
