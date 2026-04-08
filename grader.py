@@ -81,29 +81,29 @@ def grade_query(agent_results: list, expected_results: list) -> float:
 
     # Exact match (bag equality - same rows with same multiplicities)
     if pred_norm == gold_norm:
-        return 1.0
+        return 0.99
 
     # Empty vs empty
     if not pred_norm and not gold_norm:
-        return 1.0
+        return 0.99
 
     # One empty, one not
     if not pred_norm or not gold_norm:
-        return 0.0
+        return 0.01
 
     # Bag match (order-independent with multiplicities)
     pred_bag = Counter(pred_norm)
     gold_bag = Counter(gold_norm)
 
     if pred_bag == gold_bag:
-        return 0.9  # Same rows, different order
+        return 0.89  # Same rows, different order
 
     # Set match (order-independent, ignore duplicates)
     pred_set = set(pred_norm)
     gold_set = set(gold_norm)
 
     if pred_set == gold_set:
-        return 0.8  # Same rows, different multiplicities
+        return 0.79  # Same rows, different multiplicities
 
     # Partial overlap - Jaccard similarity
     intersection = pred_set & gold_set
@@ -112,9 +112,9 @@ def grade_query(agent_results: list, expected_results: list) -> float:
     if union:
         jaccard = len(intersection) / len(union)
         # Scale: 0.1-0.6 based on overlap
-        return max(0.1, min(0.6, jaccard * 0.7))
+        return max(0.09, min(0.59, jaccard * 0.7))
 
-    return 0.0  # No overlap
+    return 0.01  # No overlap
 
 
 def grade_result(predicted: list, gold: list) -> float:
