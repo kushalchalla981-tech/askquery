@@ -57,12 +57,31 @@ def _create_dev_app():
     """
     from fastapi import FastAPI
     from fastapi.responses import JSONResponse
+    from tasks import ALL_TASKS
 
     app = FastAPI(title="Text-to-SQL Environment (Dev Mode)")
 
     @app.get("/health")
     async def health():
         return {"status": "healthy", "env": ENV_NAME}
+
+    @app.get("/tasks")
+    async def get_tasks():
+        """Return all tasks with grader information."""
+        all_tasks = []
+        for difficulty, tasks in ALL_TASKS.items():
+            for task in tasks:
+                all_tasks.append(
+                    {
+                        "id": task["id"],
+                        "difficulty": difficulty,
+                        "question": task["question"],
+                        "ground_truth_sql": task["ground_truth_sql"],
+                        "expected_columns": task.get("expected_columns", []),
+                        "grader": "execution_based",
+                    }
+                )
+        return {"tasks": all_tasks}
 
     @app.post("/reset")
     async def reset(episode_id: Optional[str] = None, difficulty: Optional[str] = None):
