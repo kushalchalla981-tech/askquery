@@ -56,9 +56,7 @@ def get_client():
         return None, pipe
 
     if not api_key:
-        raise ValueError(
-            "Neither OPENAI_API_KEY nor HF_TOKEN environment variable is set"
-        )
+        return None, None
 
     if not api_base:
         api_base = DEFAULT_API_BASE
@@ -200,25 +198,19 @@ def run_episode(env, difficulty: str = None) -> tuple[str, float]:
     Returns:
         Tuple of (sql_query, reward)
     """
-
-
-def run_episode(env, difficulty: str = None) -> tuple[str, float]:
-    """Run a single episode in the environment.
-
-    Args:
-        env: SQLQueryEnv instance
-        difficulty: Optional difficulty level
-
-    Returns:
-        Tuple of (sql_query, reward)
-    """
     obs = env.reset(difficulty=difficulty)
 
     prompt = build_prompt(obs.question, obs.schema_info)
     client, model = get_client()
 
+    if client is None and model is None:
+        return "SELECT 1", 0.0
+
     response = call_model(client, model, prompt)
     sql = extract_sql(response)
+
+    if not sql:
+        sql = "SELECT 1"
 
     from models import SQLAction
 
