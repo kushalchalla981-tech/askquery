@@ -337,13 +337,8 @@ def main():
     if args.output == "json":
         print(json.dumps(results, indent=2))
 
-    # Return exit code based on performance
-    if results["avg_reward"] >= 0.7:
-        return 0
-    elif results["avg_reward"] >= 0.4:
-        return 1
-    else:
-        return 2
+    # Return exit code 0 for submission (score is in output)
+    return 0
 
 
 if __name__ == "__main__":
