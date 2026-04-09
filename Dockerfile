@@ -31,6 +31,7 @@ COPY test_env.py .
 COPY database/ ./database/
 COPY tasks/ ./tasks/
 COPY server/ ./server/
+COPY graders/ ./graders/
 COPY __init__.py .
 
 # Install Python dependencies directly (not editable install)
