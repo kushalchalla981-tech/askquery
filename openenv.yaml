@@ -4,28 +4,42 @@ description: Natural language to SQL query generation with execution-based gradi
 entry_point: sql_env:create_env
 
 graders:
-  - id: sql_execution_grader
+  - id: easy_grader
     type: execution_based
-    module: grader
-    function: grade_result
+    module: graders
+    function: EasyGrader
     min_score: 0.01
     max_score: 0.99
-    description: Grades SQL query results by comparing execution output
+    description: Grades SQL query results for easy tasks
+  - id: medium_grader
+    type: execution_based
+    module: graders
+    function: MediumGrader
+    min_score: 0.01
+    max_score: 0.99
+    description: Grades SQL query results for medium tasks
+  - id: hard_grader
+    type: execution_based
+    module: graders
+    function: HardGrader
+    min_score: 0.01
+    max_score: 0.99
+    description: Grades SQL query results for hard tasks
 
 tasks:
-  - id: easy
+  - id: easy_001
     difficulty: easy
-    grader: sql_execution_grader
+    grader: easy_grader
     question: Show all customers from California
     ground_truth_sql: SELECT id, name, email, city, state FROM customers WHERE state = 'CA'
-  - id: medium
+  - id: medium_001
     difficulty: medium
-    grader: sql_execution_grader
+    grader: medium_grader
     question: What is the total number of orders per customer?
     ground_truth_sql: SELECT c.id, c.name, COUNT(o.id) as order_count FROM customers c LEFT JOIN orders o ON c.id = o.customer_id GROUP BY c.id, c.name ORDER BY order_count DESC
-  - id: hard
+  - id: hard_001
     difficulty: hard
-    grader: sql_execution_grader
+    grader: hard_grader
     question: Find customers whose total spending exceeds the average
     ground_truth_sql: SELECT c.id, c.name, c.email, SUM(o.total_amount) as total_spent FROM customers c JOIN orders o ON c.id = o.customer_id GROUP BY c.id, c.name, c.email HAVING SUM(o.total_amount) > (SELECT AVG(total_spent) FROM (SELECT customer_id, SUM(total_amount) as total_spent FROM orders GROUP BY customer_id)) ORDER BY total_spent DESC
 

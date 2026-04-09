@@ -4,12 +4,11 @@ version = "1.0.0"
 description = "Natural language to SQL query generation environment for OpenEnv"
 requires-python = ">=3.10"
 dependencies = [
-    "openenv",
+    "openenv-core>=0.2.0",
+    "openenv>=0.2.0",
     "pydantic>=2.0",
     "sqlglot",
     "pandas",
-    "transformers>=4.30.0",
-    "torch>=2.0.0",
     "uvicorn",
     "fastapi",
     "openai",

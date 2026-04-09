@@ -1,25 +1,72 @@
-"""Grader definitions for OpenEnv hackathon validation.
+"""Graders package for the Text-to-SQL OpenEnv environment.
 
-This module exposes grader functions that the validator checks.
-Each task must have an associated grader.
+Exports graders for each difficulty level:
+- EasyGrader: SQL execution grading for easy tasks
+- MediumGrader: SQL execution grading for medium tasks
+- HardGrader: SQL execution grading for hard tasks
 """
 
 import grader as grading_module
 
 
-# Grader functions exposed for validation
-def grade_sql_query(predicted_results: list, expected_results: list) -> float:
-    """Grade SQL query execution results.
+class EasyGrader:
+    """Grader for easy difficulty SQL tasks."""
 
-    Returns score in range (0.0, 1.0) - strictly between 0 and 1.
-    """
-    return grading_module.grade_result(predicted_results, expected_results)
+    def __init__(self):
+        self.last_breakdown = {}
+
+    def grade(self, predicted_result: list, expected_result: list) -> float:
+        """Grade SQL query results for easy tasks.
+
+        Returns score strictly between 0.0 and 1.0 for OpenEnv validation.
+        """
+        score = grading_module.grade_result(predicted_result, expected_result)
+        self.last_breakdown = {
+            "predicted_count": len(predicted_result or []),
+            "expected_count": len(expected_result or []),
+            "score": score,
+        }
+        return score
 
 
-# Registry of graders per task type
-GRADERS = {
-    "execution_based": grade_sql_query,
-}
+class MediumGrader:
+    """Grader for medium difficulty SQL tasks."""
+
+    def __init__(self):
+        self.last_breakdown = {}
+
+    def grade(self, predicted_result: list, expected_result: list) -> float:
+        """Grade SQL query results for medium tasks.
+
+        Returns score strictly between 0.0 and 1.0 for OpenEnv validation.
+        """
+        score = grading_module.grade_result(predicted_result, expected_result)
+        self.last_breakdown = {
+            "predicted_count": len(predicted_result or []),
+            "expected_count": len(expected_result or []),
+            "score": score,
+        }
+        return score
 
 
-__all__ = ["grade_sql_query", "GRADERS"]
+class HardGrader:
+    """Grader for hard difficulty SQL tasks."""
+
+    def __init__(self):
+        self.last_breakdown = {}
+
+    def grade(self, predicted_result: list, expected_result: list) -> float:
+        """Grade SQL query results for hard tasks.
+
+        Returns score strictly between 0.0 and 1.0 for OpenEnv validation.
+        """
+        score = grading_module.grade_result(predicted_result, expected_result)
+        self.last_breakdown = {
+            "predicted_count": len(predicted_result or []),
+            "expected_count": len(expected_result or []),
+            "score": score,
+        }
+        return score
+
+
+__all__ = ["EasyGrader", "MediumGrader", "HardGrader"]

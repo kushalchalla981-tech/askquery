@@ -85,38 +85,38 @@ def _create_dev_app():
         - Each task should include grader type information
         """
         try:
-            # Return exactly 3 tasks - one per difficulty
-            # This matches what the validator expects
+            # Return exactly 3 tasks - one per difficulty with unique grader IDs
+            # These match the graders defined in openenv.yaml
             all_tasks = [
                 {
-                    "id": "easy",
+                    "id": "easy_001",
                     "difficulty": "easy",
                     "question": "Show all customers from California",
                     "has_grader": True,
-                    "grader": "sql_execution_grader",
+                    "grader": "easy_grader",
                     "grader_type": "execution_based",
                 },
                 {
-                    "id": "medium",
+                    "id": "medium_001",
                     "difficulty": "medium",
                     "question": "What is the total number of orders per customer?",
                     "has_grader": True,
-                    "grader": "sql_execution_grader",
+                    "grader": "medium_grader",
                     "grader_type": "execution_based",
                 },
                 {
-                    "id": "hard",
+                    "id": "hard_001",
                     "difficulty": "hard",
                     "question": "Find customers whose total spending exceeds the average",
                     "has_grader": True,
-                    "grader": "sql_execution_grader",
+                    "grader": "hard_grader",
                     "grader_type": "execution_based",
                 },
             ]
             return {
                 "tasks": all_tasks,
                 "total": 3,
-                "graders": ["sql_execution_grader"],
+                "graders": ["easy_grader", "medium_grader", "hard_grader"],
             }
         except Exception as e:
             return {"tasks": [], "total": 0, "error": str(e)}
