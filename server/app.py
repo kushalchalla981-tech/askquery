@@ -99,8 +99,8 @@ def _create_dev_app():
                             "id": task["id"],
                             "difficulty": difficulty,
                             "question": task["question"],
-                            "grader": "execution_based",
-                            "grader_type": "sql_execution",
+                            "grader": "sql_execution_grader",
+                            "grader_type": "execution_based",
                         }
                     )
             return {

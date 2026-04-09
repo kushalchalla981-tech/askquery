@@ -3,6 +3,35 @@ version: 1.0.0
 description: Natural language to SQL query generation with execution-based grading
 entry_point: sql_env:create_env
 
+graders:
+  - id: sql_execution_grader
+    type: execution_based
+    module: graders
+    function: grade_sql_query
+    min_score: 0.01
+    max_score: 0.99
+    description: Grades SQL query results by comparing execution output
+
+tasks:
+  - id: easy_001
+    difficulty: easy
+    grader: sql_execution_grader
+  - id: easy_002
+    difficulty: easy
+    grader: sql_execution_grader
+  - id: easy_003
+    difficulty: easy
+    grader: sql_execution_grader
+  - id: medium_001
+    difficulty: medium
+    grader: sql_execution_grader
+  - id: medium_002
+    difficulty: medium
+    grader: sql_execution_grader
+  - id: hard_001
+    difficulty: hard
+    grader: sql_execution_grader
+
 observation:
   type: object
   properties:
@@ -28,4 +57,4 @@ action:
 
 reward:
   type: float
-  description: Reward score from 0.0 to 1.0 based on query accuracy
+  description: Reward score strictly between 0.01 and 0.99 based on query accuracy
