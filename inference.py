@@ -266,7 +266,7 @@ def run_inference(
             total_reward += reward
 
         except Exception as e:
-            print(f"[STEP] step={i + 1} action=ERROR reward=0.01", file=sys.stderr)
+            print(f"[STEP] step={i + 1} action=ERROR reward=0.0", file=sys.stderr)
             print(f"Error: {e}", file=sys.stderr)
 
             results.append(
@@ -274,12 +274,12 @@ def run_inference(
                     "step": i + 1,
                     "difficulty": difficulty,
                     "sql": "",
-                    "reward": 0.01,  # Strictly > 0.0 for OpenEnv validation
+                    "reward": 0.0,
                     "error": str(e),
                 }
             )
 
-    avg_reward = total_reward / num_episodes if num_episodes > 0 else 0.01
+    avg_reward = total_reward / num_episodes if num_episodes > 0 else 0.0
 
     print(f"[END] final_score={avg_reward:.2f}")
 
@@ -344,8 +344,8 @@ def main():
         return 0
     except Exception as e:
         print("[START]", flush=True)
-        print(f"[STEP] step=1 action=ERROR reward=0.1", flush=True)
-        print(f"[END] final_score=0.1", flush=True)
+        print(f"[STEP] step=1 action=ERROR reward=0.0", flush=True)
+        print(f"[END] final_score=0.0", flush=True)
         print(f"Error: {e}", file=sys.stderr, flush=True)
         return 0
 

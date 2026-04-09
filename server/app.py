@@ -134,7 +134,7 @@ def _create_dev_app():
 
         Returns: {
             "task_id": str,
-            "score": float  # Must be strictly between 0 and 1
+            "score": float  # Between 0 and 1
         }
         """
         try:
@@ -144,20 +144,15 @@ def _create_dev_app():
             predicted = episode_data.get("predicted_result", [])
             expected = episode_data.get("expected_result", [])
 
-            # Grade the result
             score = grader.grade_result(predicted, expected)
 
             return {
                 "task_id": task_id,
-                "score": score,
+                "score": float(score),
                 "grader_type": "execution_based",
             }
         except Exception as e:
-            return {
-                "error": str(e),
-                "score": 0.5,
-                "note": "error case - score clamped to valid range",
-            }
+            return {"error": str(e), "score": 0.5}
 
     @app.get("/baseline")
     async def run_baseline():
