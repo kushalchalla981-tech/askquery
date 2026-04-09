@@ -115,7 +115,7 @@ class SQLQueryEnv:
         if not validation["valid"]:
             return SQLObservation(
                 done=True,
-                reward=0.1,
+                reward=0.01,  # Strictly > 0.0 for OpenEnv validation
                 question=self._current_task["question"],
                 schema_info="",
                 feedback=f"SQL validation error: {validation['errors']}",
@@ -133,7 +133,7 @@ class SQLQueryEnv:
         except Exception as e:
             return SQLObservation(
                 done=True,
-                reward=0.1,
+                reward=0.01,  # Strictly > 0.0 for OpenEnv validation
                 question=self._current_task["question"],
                 schema_info="",
                 feedback=f"SQL execution error: {str(e)}",
