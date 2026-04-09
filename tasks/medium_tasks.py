@@ -13,6 +13,7 @@ MEDIUM_TASKS = [
             ORDER BY order_count DESC
         """,
         "expected_columns": ["id", "name", "order_count"],
+        "grader": "sql_execution_grader",
     },
     {
         "id": "medium_002",
@@ -26,6 +27,7 @@ MEDIUM_TASKS = [
             ORDER BY avg_order_value DESC
         """,
         "expected_columns": ["category", "avg_order_value", "total_items"],
+        "grader": "sql_execution_grader",
     },
     {
         "id": "medium_003",
@@ -40,45 +42,6 @@ MEDIUM_TASKS = [
             ORDER BY products_sold DESC
         """,
         "expected_columns": ["state", "products_sold"],
-    },
-    {
-        "id": "medium_004",
-        "question": "What is the total revenue per customer?",
-        "difficulty": "medium",
-        "ground_truth_sql": """
-            SELECT c.id, c.name, SUM(o.total_amount) as total_revenue
-            FROM customers c
-            JOIN orders o ON c.id = o.customer_id
-            GROUP BY c.id, c.name
-            ORDER BY total_revenue DESC
-        """,
-        "expected_columns": ["id", "name", "total_revenue"],
-    },
-    {
-        "id": "medium_005",
-        "question": "Which products have been ordered more than 5 times?",
-        "difficulty": "medium",
-        "ground_truth_sql": """
-            SELECT p.id, p.name, p.category, SUM(oi.quantity) as total_ordered
-            FROM products p
-            JOIN order_items oi ON p.id = oi.product_id
-            GROUP BY p.id, p.name, p.category
-            HAVING SUM(oi.quantity) > 5
-            ORDER BY total_ordered DESC
-        """,
-        "expected_columns": ["id", "name", "category", "total_ordered"],
-    },
-    {
-        "id": "medium_006",
-        "question": "What is the average number of items per order?",
-        "difficulty": "medium",
-        "ground_truth_sql": """
-            SELECT o.id as order_id, AVG(oi.quantity) as avg_items
-            FROM orders o
-            JOIN order_items oi ON o.id = oi.order_id
-            GROUP BY o.id
-            ORDER BY o.id
-        """,
-        "expected_columns": ["order_id", "avg_items"],
+        "grader": "sql_execution_grader",
     },
 ]
