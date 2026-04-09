@@ -76,6 +76,7 @@ def _create_dev_app():
         return {"status": "healthy", "env": ENV_NAME}
 
     @app.get("/tasks")
+    @app.get("/tasks/")
     async def get_tasks():
         """Return all tasks with grader information.
 
@@ -93,6 +94,7 @@ def _create_dev_app():
                     "question": "Show all customers from California",
                     "has_grader": True,
                     "grader": "sql_execution_grader",
+                    "grader_type": "execution_based",
                 },
                 {
                     "id": "medium",
@@ -100,6 +102,7 @@ def _create_dev_app():
                     "question": "What is the total number of orders per customer?",
                     "has_grader": True,
                     "grader": "sql_execution_grader",
+                    "grader_type": "execution_based",
                 },
                 {
                     "id": "hard",
@@ -107,11 +110,13 @@ def _create_dev_app():
                     "question": "Find customers whose total spending exceeds the average",
                     "has_grader": True,
                     "grader": "sql_execution_grader",
+                    "grader_type": "execution_based",
                 },
             ]
             return {
                 "tasks": all_tasks,
                 "total": 3,
+                "graders": ["sql_execution_grader"],
             }
         except Exception as e:
             return {"tasks": [], "total": 0, "error": str(e)}
