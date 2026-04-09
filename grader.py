@@ -73,7 +73,7 @@ def grade_query(agent_results: list, expected_results: list) -> float:
         expected_results: Expected results from ground truth SQL
 
     Returns:
-        Reward score from 0.0 to 1.0
+        Reward score from 0.1 to 0.99
     """
     # Normalize results
     pred_norm = normalize_results(agent_results or [])
@@ -89,7 +89,7 @@ def grade_query(agent_results: list, expected_results: list) -> float:
 
     # One empty, one not
     if not pred_norm or not gold_norm:
-        return 0.01
+        return 0.1
 
     # Bag match (order-independent with multiplicities)
     pred_bag = Counter(pred_norm)
@@ -112,9 +112,9 @@ def grade_query(agent_results: list, expected_results: list) -> float:
     if union:
         jaccard = len(intersection) / len(union)
         # Scale: 0.1-0.6 based on overlap
-        return max(0.09, min(0.59, jaccard * 0.7))
+        return max(0.1, min(0.59, jaccard * 0.7))
 
-    return 0.01  # No overlap
+    return 0.1  # No overlap
 
 
 def grade_result(predicted: list, gold: list) -> float:
@@ -125,7 +125,7 @@ def grade_result(predicted: list, gold: list) -> float:
         gold: Expected (ground truth) results
 
     Returns:
-        Reward score from 0.0 to 1.0
+        Reward score from 0.1 to 0.99
     """
     return grade_query(predicted, gold)
 
@@ -143,7 +143,7 @@ def grade_with_columns(
         expected_columns: List of expected column names
 
     Returns:
-        Reward score from 0.0 to 1.0
+        Reward score from 0.1 to 0.99
     """
     from database import execute_query
 
@@ -156,10 +156,10 @@ def grade_with_columns(
 
     # Otherwise, provide small bonus for valid execution (result is not empty)
     if agent_results and not expected_results:
-        return 0.09  # Got data when expected none
+        return 0.1  # Got data when expected none
 
     if expected_results and not agent_results:
-        return 0.01  # Got none when expected data
+        return 0.1  # Got none when expected data
 
     # For partial matches, keep row-based score
     return row_score
