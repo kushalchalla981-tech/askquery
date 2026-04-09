@@ -6,31 +6,28 @@ entry_point: sql_env:create_env
 graders:
   - id: sql_execution_grader
     type: execution_based
-    module: graders
-    function: grade_sql_query
+    module: grader
+    function: grade_result
     min_score: 0.01
     max_score: 0.99
     description: Grades SQL query results by comparing execution output
 
 tasks:
-  - id: easy_001
+  - id: easy
     difficulty: easy
     grader: sql_execution_grader
-  - id: easy_002
-    difficulty: easy
-    grader: sql_execution_grader
-  - id: easy_003
-    difficulty: easy
-    grader: sql_execution_grader
-  - id: medium_001
+    question: Show all customers from California
+    ground_truth_sql: SELECT id, name, email, city, state FROM customers WHERE state = 'CA'
+  - id: medium
     difficulty: medium
     grader: sql_execution_grader
-  - id: medium_002
-    difficulty: medium
-    grader: sql_execution_grader
-  - id: hard_001
+    question: What is the total number of orders per customer?
+    ground_truth_sql: SELECT c.id, c.name, COUNT(o.id) as order_count FROM customers c LEFT JOIN orders o ON c.id = o.customer_id GROUP BY c.id, c.name ORDER BY order_count DESC
+  - id: hard
     difficulty: hard
     grader: sql_execution_grader
+    question: Find customers whose total spending exceeds the average
+    ground_truth_sql: SELECT c.id, c.name, c.email, SUM(o.total_amount) as total_spent FROM customers c JOIN orders o ON c.id = o.customer_id GROUP BY c.id, c.name, c.email HAVING SUM(o.total_amount) > (SELECT AVG(total_spent) FROM (SELECT customer_id, SUM(total_amount) as total_spent FROM orders GROUP BY customer_id)) ORDER BY total_spent DESC
 
 observation:
   type: object
@@ -57,4 +54,4 @@ action:
 
 reward:
   type: float
-  description: Reward score strictly between 0.01 and 0.99 based on query accuracy
+  description: Reward score strictly between 0.01 and 0.99
