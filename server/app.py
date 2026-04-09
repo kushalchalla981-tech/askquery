@@ -143,7 +143,11 @@ def _create_dev_app():
                 "grader_type": "execution_based",
             }
         except Exception as e:
-            return {"error": str(e), "score": 0.5}
+            return {
+                "error": str(e),
+                "score": 0.5,
+                "note": "error case - score clamped to valid range",
+            }
 
     @app.get("/baseline")
     async def run_baseline():
@@ -153,6 +157,7 @@ def _create_dev_app():
         The validator checks these scores are in valid range.
         """
         try:
+            import grader
             from sql_env import create_env
 
             results = {}
@@ -160,22 +165,38 @@ def _create_dev_app():
                 env = create_env()
                 obs = env.reset(difficulty=difficulty)
 
-                # Execute ground truth to get expected result
-                task = env.get_task()
-                expected = env.get_expected_result()
+                from tasks import ALL_TASKS
 
-                # Grade the ground truth (should get high score)
-                score = grader.grade_result(expected, expected)
+                task = (
+                    ALL_TASKS[difficulty][0]
+                    if difficulty in ALL_TASKS and ALL_TASKS[difficulty]
+                    else None
+                )
 
-                results[difficulty] = {
-                    "score": score,
-                    "task_id": task["id"] if task else None,
-                    "question": task["question"] if task else None,
-                }
+                if task:
+                    from database import execute_query
+
+                    db_path = os.getenv(
+                        "DB_PATH",
+                        os.path.join(
+                            os.path.dirname(__file__), "..", "database", "sample.db"
+                        ),
+                    )
+                    expected, _ = execute_query(db_path, task["ground_truth_sql"])
+
+                    score = grader.grade_result(expected, expected)
+
+                    results[difficulty] = {
+                        "score": score,
+                        "task_id": task["id"],
+                        "question": task["question"],
+                    }
 
             return {
                 "baseline_scores": results,
-                "average": sum(r["score"] for r in results.values()) / len(results),
+                "average": sum(r["score"] for r in results.values()) / len(results)
+                if results
+                else 0,
             }
         except Exception as e:
             return {"error": str(e)}
