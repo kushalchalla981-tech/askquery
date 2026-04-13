@@ -4,42 +4,28 @@ description: Natural language to SQL query generation with execution-based gradi
 entry_point: sql_env:create_env
 
 graders:
-  - id: easy_grader
+  - id: sql_execution_grader
     type: execution_based
-    module: graders
-    function: EasyGrader
-    min_score: 0.01
-    max_score: 0.99
-    description: Grades SQL query results for easy tasks
-  - id: medium_grader
-    type: execution_based
-    module: graders
-    function: MediumGrader
-    min_score: 0.01
-    max_score: 0.99
-    description: Grades SQL query results for medium tasks
-  - id: hard_grader
-    type: execution_based
-    module: graders
-    function: HardGrader
-    min_score: 0.01
-    max_score: 0.99
-    description: Grades SQL query results for hard tasks
+    module: grader
+    function: grade_result
+    min_score: 0.0
+    max_score: 1.0
+    description: Grades SQL query results by comparing execution output
 
 tasks:
-  - id: easy_001
+  - id: easy
     difficulty: easy
-    grader: easy_grader
+    grader: sql_execution_grader
     question: Show all customers from California
     ground_truth_sql: SELECT id, name, email, city, state FROM customers WHERE state = 'CA'
-  - id: medium_001
+  - id: medium
     difficulty: medium
-    grader: medium_grader
+    grader: sql_execution_grader
     question: What is the total number of orders per customer?
     ground_truth_sql: SELECT c.id, c.name, COUNT(o.id) as order_count FROM customers c LEFT JOIN orders o ON c.id = o.customer_id GROUP BY c.id, c.name ORDER BY order_count DESC
-  - id: hard_001
+  - id: hard
     difficulty: hard
-    grader: hard_grader
+    grader: sql_execution_grader
     question: Find customers whose total spending exceeds the average
     ground_truth_sql: SELECT c.id, c.name, c.email, SUM(o.total_amount) as total_spent FROM customers c JOIN orders o ON c.id = o.customer_id GROUP BY c.id, c.name, c.email HAVING SUM(o.total_amount) > (SELECT AVG(total_spent) FROM (SELECT customer_id, SUM(total_amount) as total_spent FROM orders GROUP BY customer_id)) ORDER BY total_spent DESC
 
@@ -68,4 +54,4 @@ action:
 
 reward:
   type: float
-  description: Reward score strictly between 0.01 and 0.99
+  description: Reward score between 0.0 and 1.0

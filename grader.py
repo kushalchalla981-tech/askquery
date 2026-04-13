@@ -62,23 +62,26 @@ def execute_query(db_path: str, sql: str):
 def grade_query(agent_results: list, expected_results: list) -> float:
     """Grade predicted result against gold result.
 
-    Returns reward between 0.0 and 1.0 (inclusive).
+    Returns reward between 0.0 and 1.0 (exclusive bounds).
+    Exact match returns 0.99 (not 1.0), no match returns 0.01 (not 0.0).
+
+    This satisfies: "strictly between 0 and 1 (not 0.0 and not 1.0)"
 
     Score Range:
-    - Exact match: 1.0
-    - Empty vs empty: 1.0
-    - One empty/one not: 0.0
-    - Same rows, different order: 0.8
-    - Same rows, different count: 0.6
-    - Partial overlap: 0.1-0.5 (based on Jaccard)
-    - No overlap: 0.0
+    - Exact match: 0.99
+    - Empty vs empty: 0.99
+    - One empty/one not: 0.01
+    - Same rows, different order: 0.89
+    - Same rows, different count: 0.79
+    - Partial overlap: 0.02-0.59 (Jaccard)
+    - No overlap: 0.01
 
     Args:
         agent_results: Results from the agent's SQL query
         expected_results: Expected results from ground truth SQL
 
     Returns:
-        Reward score between 0.0 and 1.0
+        Reward score strictly between 0.0 and 1.0
     """
     # Normalize results
     pred_norm = normalize_results(agent_results or [])
@@ -86,29 +89,29 @@ def grade_query(agent_results: list, expected_results: list) -> float:
 
     # Exact match (bag equality - same rows with same multiplicities)
     if pred_norm == gold_norm:
-        return 1.0
+        return 0.99
 
     # Empty vs empty
     if not pred_norm and not gold_norm:
-        return 1.0
+        return 0.99
 
     # One empty, one not
     if not pred_norm or not gold_norm:
-        return 0.0
+        return 0.01
 
     # Bag match (order-independent with multiplicities)
     pred_bag = Counter(pred_norm)
     gold_bag = Counter(gold_norm)
 
     if pred_bag == gold_bag:
-        return 0.8
+        return 0.89
 
     # Set match (order-independent, ignore duplicates)
     pred_set = set(pred_norm)
     gold_set = set(gold_norm)
 
     if pred_set == gold_set:
-        return 0.6
+        return 0.79
 
     # Partial overlap - Jaccard similarity
     intersection = pred_set & gold_set
@@ -116,9 +119,9 @@ def grade_query(agent_results: list, expected_results: list) -> float:
 
     if union:
         jaccard = len(intersection) / len(union)
-        return round(jaccard * 0.5, 2)
+        return round(max(0.02, min(0.59, jaccard * 0.7)), 2)
 
-    return 0.0
+    return 0.01
 
 
 def grade_result(predicted: list, gold: list) -> float:
@@ -147,19 +150,19 @@ def grade_with_columns(
         expected_columns: List of expected column names
 
     Returns:
-        Reward score between 0.0 and 1.0
+        Reward score strictly between 0.0 and 1.0
     """
     from database import execute_query
 
     row_score = grade_query(agent_results, expected_results)
 
-    if row_score >= 1.0:
-        return 1.0
+    if row_score >= 0.99:
+        return 0.99
 
     if agent_results and not expected_results:
-        return 0.0
+        return 0.01
 
     if expected_results and not agent_results:
-        return 0.0
+        return 0.01
 
     return row_score
